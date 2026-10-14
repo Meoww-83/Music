@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Dark-theme overrides. Launcher colours are intentionally NOT overridden
+         so the app icon stays identical in both modes. -->
+    <color name="music_primary">#6FF7F5</color>
+    <color name="music_on_primary">#002020</color>
+    <color name="music_primary_container">#004F4D</color>
+    <color name="music_on_primary_container">#6FF7F5</color>
+    <color name="music_accent">#00CEBE</color>
+
+    <color name="background">#001A19</color>
+
+    <color name="notification_accent">#6FF7F5</color>
+    <color name="notification_icon_bg">#000000</color>
+
+</resources>

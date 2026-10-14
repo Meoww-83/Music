@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Flat brand-colour layer of the adaptive launcher icon (minSdk 26:
+     mipmap-anydpi-v26 covers every density, so no PNGs are shipped). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <path
+        android:fillColor="@color/ic_launcher_background"
+        android:pathData="M0,0h108v108h-108z" />
+
+</vector>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <!-- java.time / java.nio.file APIs come from core library desugaring
+         (isCoreLibraryDesugaringEnabled = true in app/build.gradle.kts). -->
+    <issue id="NewApi" severity="warning" />
+
+    <!-- Dependency bumps are deliberate decisions, not lint-driven. -->
+    <issue id="GradleDependency" severity="warning" />
+    <issue id="NewerVersionAvailable" severity="warning" />
+
+    <!-- English-only for now; translations are not shipped yet. -->
+    <issue id="MissingTranslation" severity="ignore" />
+    <issue id="ExtraTranslation" severity="ignore" />
+
+    <!-- Compose UI: classic View accessibility/i18n checks do not apply. -->
+    <issue id="ClickableViewAccessibility" severity="ignore" />
+    <issue id="SetTextI18n" severity="ignore" />
+    <issue id="HardcodedText" severity="warning" />
+
+    <!-- Room schema location is configured explicitly via KSP args. -->
+    <issue id="RoomSchemaLocation" severity="ignore" />
+
+    <!-- Launcher icon intentionally ships vector-only (anydpi-v26, minSdk 26). -->
+    <issue id="IconDensityFolder" severity="ignore" />
+    <issue id="IconMissingDensityFolder" severity="ignore" />
+</lint>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Night-mode adjustments; unlisted items are inherited from values/themes.xml. -->
+    <style name="Theme.Music" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Dark status-bar icons on the dark startup background. -->
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+
+</resources>

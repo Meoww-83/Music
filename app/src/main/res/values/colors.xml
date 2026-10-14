@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Brand / accent (Material 3 teal family).
+         Compose derives the full dynamic palette at runtime (material-kolor);
+         these XML colours cover the window, launcher icon and notifications. -->
+    <color name="music_primary">#006A6A</color>
+    <color name="music_on_primary">#FFFFFF</color>
+    <color name="music_primary_container">#6FF7F5</color>
+    <color name="music_on_primary_container">#002020</color>
+    <color name="music_accent">#00B8A9</color>
+
+    <!-- Window background shown before Compose takes over (light theme). -->
+    <color name="background">#F4FAF9</color>
+
+    <!-- Notifications: media-session accent + legacy small-icon background. -->
+    <color name="notification_accent">#006A6A</color>
+    <color name="notification_icon_bg">#FFFFFF</color>
+
+    <!-- Launcher adaptive-icon layers (never overridden in night mode). -->
+    <color name="ic_launcher_background">#006A6A</color>
+    <color name="ic_launcher_foreground">#FFFFFF</color>
+
+</resources>

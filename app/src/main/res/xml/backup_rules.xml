@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Pre-Android 12 backup rules: never back up the streaming cache or its
+     bookkeeping database — they are large, regenerable and device-local. -->
+<full-backup-content>
+    <exclude
+        domain="file"
+        path="./exoplayer" />
+    <exclude
+        domain="database"
+        path="exoplayer_internal.db" />
+</full-backup-content>

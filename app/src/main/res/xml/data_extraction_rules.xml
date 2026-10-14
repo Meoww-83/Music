@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 12+ backup / device-transfer rules: the SimpleCache store under
+     cacheDir/exoplayer and its StandaloneDatabaseProvider database are
+     excluded (large, regenerable, device-local). -->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude
+            domain="file"
+            path="./exoplayer" />
+        <exclude
+            domain="database"
+            path="exoplayer_internal.db" />
+    </cloud-backup>
+    <device-transfer>
+        <exclude
+            domain="file"
+            path="./exoplayer" />
+        <exclude
+            domain="database"
+            path="exoplayer_internal.db" />
+    </device-transfer>
+</data-extraction-rules>

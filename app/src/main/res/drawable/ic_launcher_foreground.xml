@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Stylised eighth note (head + stem + flag), white on the brand background.
+     All geometry stays inside the 66 dp adaptive-icon safe zone of the
+     108x108 canvas (roughly x/y 27..81) so any launcher mask works. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Note head (circle centred at 41,72 with radius 9). -->
+    <path
+        android:fillColor="@color/ic_launcher_foreground"
+        android:pathData="M50,72 A9,9 0 1 1 32,72 A9,9 0 1 1 50,72 Z" />
+
+    <!-- Stem. -->
+    <path
+        android:fillColor="@color/ic_launcher_foreground"
+        android:pathData="M50,27 L56,27 L56,70 L50,70 Z" />
+
+    <!-- Flag. -->
+    <path
+        android:fillColor="@color/ic_launcher_foreground"
+        android:pathData="M56,27 C70,31 76,41 74,55 C70,45 62,39 56,41 Z" />
+
+</vector>
