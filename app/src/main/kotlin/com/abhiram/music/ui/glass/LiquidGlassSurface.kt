@@ -41,6 +41,7 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -205,8 +206,10 @@ fun LiquidGlassSurface(
                         .offset { IntOffset(-padInt, -padInt) }
                         .requiredSize(
                             with(density) {
-                                IntSize(glassSize.width + 2 * padInt, glassSize.height + 2 * padInt)
-                                    .toDpSize()
+                                Size(
+                                    (glassSize.width + 2 * padInt).toFloat(),
+                                    (glassSize.height + 2 * padInt).toFloat(),
+                                ).toDpSize()
                             },
                         )
                         .graphicsLayer {
@@ -230,7 +233,7 @@ fun LiquidGlassSurface(
                                 }
                                 // Full backdrop size, unclamped: requiredSize so the sample keeps
                                 // the backdrop's real layout; the layer clip trims the overflow.
-                                .requiredSize(with(density) { backdropSize.toDpSize() }),
+                                .requiredSize(with(density) { Size(backdropSize.width.toFloat(), backdropSize.height.toFloat()).toDpSize() }),
                         ) {
                             backdrop()
                         }
