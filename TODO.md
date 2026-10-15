@@ -5,7 +5,7 @@
 > Build/CI rules supersede the old "no commit/push" rule — per `$HOME/build.txt`: push to the
 > **private** repo, compile on GitHub Actions, poll every 10 s, fix from failure logs, repeat
 > until green, then download the APK artifact to `/data/data/com.termux/files/home/`.
-> Temporary rule in force until the first green build: **no sub-agents; all edits/writes via bash**.
+> Temporary rule (now lifted — first green build reached): **no sub-agents; all edits/writes via bash**.
 
 **Status legend:** [ ] todo · [~] in progress · [x] done
 
@@ -58,10 +58,10 @@
 ## Build pipeline (per $HOME/build.txt)
 - [x] gh CLI authenticated (Meoww-83), private repo: https://github.com/Meoww-83/Music
 - [x] GITHUB_REPOSITORY buildConfigField → "Meoww-83/Music"
-- [ ] **Initial push of full source → GitHub**
-- [ ] **GitHub Actions `Build Debug` green** (poll every 10 s, fix logs, repeat)
-- [ ] **Download APK artifact → /data/data/com.termux/files/home/**
-- [ ] Final TODO close-out
+- [x] **Initial push of full source → GitHub** (fcc0581)
+- [x] **GitHub Actions `Build Debug` green** (run 38732283852, 2m28s) — fixed 169→3→3→0 errors over 5 pushes (72fc096, 19f88ea, f88ca35)
+- [x] **Download APK artifact → /data/data/com.termux/files/home/** (app-debug.apk, 38.19 MB, md5 fb2af094…)
+- [x] Final TODO close-out
 
 ---
 
@@ -72,3 +72,8 @@
 - 16:0x — Wave 2 reports in (CMP-D, SCR-L, SCR-D) + theme/glass/components/scaffolds landed
 - 16:4x — Wave 3 complete: navigation restructure, import fixes, `bracket_scan.py` created; caught + fixed real `SettingsScreen.kt` KDoc lexer bug
 - Oct 15 — All pre-flight gates green; ready for initial push + CI loop
+- Oct 15 11:50 — Pushed full source (fcc0581); CI run 38719477400 → 169 compile errors across 36 files
+- Oct 15 11:56 — Batch-3 (72fc096): glass compositionLocals, ArtistPage.sections API, DataStore.data.map, FlowRow, icons, named-args → 3 errors
+- Oct 15 12:03 — Batch-4 (19f88ea): IntSize→Size.toDpSize(), Color.isUnspecified import → 3 errors (JVM clash)
+- Oct 15 12:11 — Batch-5 (f88ca35): consolidate toMediaMetadataList overloads → **BUILD GREEN** (run 38732283852)
+- Oct 15 12:11 — APK delivered to /data/data/com.termux/files/home/app-debug.apk (md5 verified) — TASK COMPLETE
