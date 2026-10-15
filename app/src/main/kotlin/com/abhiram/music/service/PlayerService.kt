@@ -167,7 +167,7 @@ class PlayerService : MediaSessionService() {
         )
 
         val session =
-            MediaSession.Builder(exoPlayer)
+            MediaSession.Builder(this, exoPlayer)
                 .setSessionActivity(
                     PendingIntent.getActivity(
                         this,

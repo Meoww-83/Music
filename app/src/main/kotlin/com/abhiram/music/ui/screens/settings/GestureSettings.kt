@@ -50,23 +50,23 @@ class GesturePreferences(context: Context) {
 
     /** Seconds seeked per double-tap on the seek bar sides. */
     val doubleTapSeekSeconds: Flow<Int> =
-        dataStore.map { it[Keys.DoubleTapSeekSeconds] ?: 10 }
+        dataStore.data.map { it[Keys.DoubleTapSeekSeconds] ?: 10 }
 
     /** Whether a long press opens the item menu instead of playing immediately. */
     val longPressForOptions: Flow<Boolean> =
-        dataStore.map { it[Keys.LongPressForOptions] ?: true }
+        dataStore.data.map { it[Keys.LongPressForOptions] ?: true }
 
     /** Multiplier applied to seek gestures (double-tap and swipe). */
     val seekSensitivity: Flow<Float> =
-        dataStore.map { it[Keys.SeekSensitivity] ?: 1f }
+        dataStore.data.map { it[Keys.SeekSensitivity] ?: 1f }
 
     /** Whether swiping up on the mini player opens the full player. */
     val swipeUpOpensPlayer: Flow<Boolean> =
-        dataStore.map { it[Keys.SwipeUpOpensPlayer] ?: true }
+        dataStore.data.map { it[Keys.SwipeUpOpensPlayer] ?: true }
 
     /** Whether gesture interactions emit haptic feedback. */
     val hapticsEnabled: Flow<Boolean> =
-        dataStore.map { it[Keys.HapticsEnabled] ?: true }
+        dataStore.data.map { it[Keys.HapticsEnabled] ?: true }
 
     fun setDoubleTapSeekSeconds(value: Int) = edit { it[Keys.DoubleTapSeekSeconds] = value.coerceIn(5, 30) }
 

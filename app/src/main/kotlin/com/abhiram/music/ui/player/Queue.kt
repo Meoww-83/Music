@@ -233,7 +233,7 @@ fun Queue(
                                         translationY = dragOffsetY
                                         scaleX = 1.02f
                                         scaleY = 1.02f
-                                        shadowElevation = 12.dp
+                                        shadowElevation = 12.dp.toPx()
                                     }
                                 } else {
                                     Modifier

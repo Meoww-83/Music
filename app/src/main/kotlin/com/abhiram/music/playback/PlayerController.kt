@@ -143,7 +143,7 @@ object PlayerControllerProvider {
         synchronized(this) { pending = action }
         runCatching {
             val intent = android.content.Intent(context.applicationContext, com.abhiram.music.service.PlayerService::class.java)
-            android.content.ContextCompat.startForegroundService(context.applicationContext, intent)
+            androidx.core.content.ContextCompat.startForegroundService(context.applicationContext, intent)
         }.onFailure {
             synchronized(this) { pending = null }
         }

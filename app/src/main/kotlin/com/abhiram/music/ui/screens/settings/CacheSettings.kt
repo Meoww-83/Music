@@ -123,9 +123,8 @@ fun CacheSizeChips(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
         )
         FlowRow(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(horizontal = 16.dp),
         ) {
             CacheSizeOptions.forEach { (label, bytes) ->
                 FilterChip(

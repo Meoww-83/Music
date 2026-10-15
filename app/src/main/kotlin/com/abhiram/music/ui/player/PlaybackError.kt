@@ -174,14 +174,14 @@ fun PlaybackError(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(48.dp)
-                        .springTap {
+                        .springTap(onClick = {
                             copyToClipboard(context, "Video id", videoId)
                             idScope.launch {
                                 idCopied.value = true
                                 delay(1_400)
                                 idCopied.value = false
                             }
-                        },
+                        }),
                 ) {
                     Text(
                         text = if (idCopied.value) "Copied" else "ID  $videoId",

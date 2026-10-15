@@ -9,6 +9,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.abhiram.innertube.models.ArtistItem
 import com.abhiram.innertube.models.PlaylistItem
+import com.abhiram.innertube.models.YTItem
 import com.abhiram.innertube.pages.AlbumPage
 import com.abhiram.innertube.pages.ArtistPage
 import com.abhiram.music.database.DatabaseDao
@@ -85,22 +86,27 @@ data class ArtistDetailUiState(
             online
                 ?.let { page ->
                     page
-                        .section("Songs")
-                        ?.songs()
-                        .orEmpty()
-                        .ifEmpty { page.songs() }
+                        .sectionItems("Songs")
+                        .ifEmpty { page.allItems() }
                         .toMediaMetadataList()
                         .ifEmpty { localSongs }
                 } ?: localSongs
 
     /** "Top songs" carousel of the overview tab, capped to a single row of cards. */
     val topSongs: List<MediaMetadata>
-        get() = online?.section("Top songs")?.songs().orEmpty().toMediaMetadataList().take(10)
+        get() = online?.sectionItems("Top songs").orEmpty().toMediaMetadataList().take(10)
 
     /** "Fans might also like" carousel of the overview tab. */
     val relatedArtists: List<ArtistItem>
-        get() = online?.section("Fans might also like")?.artists().orEmpty()
+        get() = online?.sectionItems("Fans might also like").orEmpty().filterIsInstance<ArtistItem>()
 }
+
+/** Items of the first [ArtistPage] section whose title starts with [prefix], if any. */
+private fun ArtistPage.sectionItems(prefix: String): List<YTItem> =
+    sections.firstOrNull { it.title.startsWith(prefix, ignoreCase = true) }?.items.orEmpty()
+
+/** Every item across all sections of the page, songs included. */
+private fun ArtistPage.allItems(): List<YTItem> = sections.flatMap { it.items }
 
 /** Loads and refreshes one artist page plus its Room cache for `artist/{id}`. */
 class ArtistDetailViewModel(private val id: String) : ViewModel() {
@@ -413,13 +419,13 @@ class BuiltInPlaylistDetailViewModel(id: String) : ViewModel() {
         val builtIn = BuiltInPlaylist.fromId(id)
         if (builtIn == null) {
             _state.value = BuiltInPlaylistDetailUiState(isLoading = false)
-            return
-        }
-        viewModelScope.launch {
-            source(builtIn)
-                .collect { songs ->
-                    _state.value = BuiltInPlaylistDetailUiState(isLoading = false, songs = songs)
-                }
+        } else {
+            viewModelScope.launch {
+                source(builtIn)
+                    .collect { songs ->
+                        _state.value = BuiltInPlaylistDetailUiState(isLoading = false, songs = songs)
+                    }
+            }
         }
     }
 
@@ -442,13 +448,13 @@ class BuiltInPlaylistDetailViewModel(id: String) : ViewModel() {
                         )
                         .map { it.song.id }
                     if (rankedIds.isEmpty()) {
-                        flowOf(emptyList())
+                        flowOf(emptyList<MediaMetadata>())
                     } else {
-                        dao.songsByIds(rankedIds).map { songs ->
-                            songs
+                        flowOf(
+                            dao.songsByIds(rankedIds)
                                 .sortedBy { rankedIds.indexOf(it.id) }
-                                .map { it.toMediaMetadata() }
-                        }
+                                .map { it.toMediaMetadata() },
+                        )
                     }
                 }
 

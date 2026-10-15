@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.nestedscroll.nestedScroll
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,8 +19,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.layout
-import androidx.compose.ui.nestedscroll.NestedScrollConnection
-import androidx.compose.ui.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -156,8 +156,8 @@ internal fun rememberScaffoldHeaderCollapseState(): ScaffoldHeaderCollapseState 
 internal fun Modifier.collapsibleHeader(state: ScaffoldHeaderCollapseState): Modifier =
     this
         .clipToBounds()
-        .layout { measurables, constraints ->
-            val child = measurables.first().measure(
+        .layout { measurable, constraints ->
+            val child = measurable.measure(
                 constraints.copy(maxHeight = Constraints.Infinity),
             )
             state.naturalHeightPx = child.height.toFloat()

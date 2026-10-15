@@ -16,7 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.State
@@ -161,7 +161,8 @@ fun LiquidGlassSurface(
         backdropContent != null && backdropMetrics != null
     val sampleContent = if (glassActive) backdropContent else null
 
-    val blurPx = with(LocalDensity.current) { blurRadius.toPx() }
+    val density = LocalDensity.current
+    val blurPx = with(density) { blurRadius.toPx() }
     val blurEffect: RenderEffect? = remember(glassActive, blurPx) {
         if (glassActive && blurPx > 0f && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             android.graphics.RenderEffect
@@ -199,11 +200,19 @@ fun LiquidGlassSurface(
                 Box(
                     // The blur layer is pad-px larger than the pane on every side, so CLAMP
                     // smearing lands outside the clip and the outline stays razor sharp.
+                    // requiredSize (not size) so the layer may overflow the pane's constraints.
                     Modifier
                         .offset { IntOffset(-padInt, -padInt) }
-                        .size(IntSize(glassSize.width + 2 * padInt, glassSize.height + 2 * padInt))
+                        .requiredSize(
+                            with(density) {
+                                IntSize(glassSize.width + 2 * padInt, glassSize.height + 2 * padInt)
+                                    .toDpSize()
+                            },
+                        )
                         .graphicsLayer {
-                            clipToBounds = true
+                            // Clip the sample to this oversized layer: the smear stays outside
+                            // the pane outline, which the pane's own clip trims away.
+                            clip = true
                             renderEffect = blurEffect
                         },
                 ) {
@@ -219,7 +228,9 @@ fun LiquidGlassSurface(
                                         (origin.y - glassPosition.y + padPx).roundToInt(),
                                     )
                                 }
-                                .size(backdropSize),
+                                // Full backdrop size, unclamped: requiredSize so the sample keeps
+                                // the backdrop's real layout; the layer clip trims the overflow.
+                                .requiredSize(with(density) { backdropSize.toDpSize() }),
                         ) {
                             backdrop()
                         }

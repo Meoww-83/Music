@@ -38,6 +38,13 @@ import timber.log.Timber
 import java.time.LocalDateTime
 import java.util.concurrent.ConcurrentHashMap
 
+/**
+ * media3's [Player] exposes only [Player.getMediaItemCount] / [Player.getMediaItemAt] rather
+ * than a list property; this adapter presents the timeline as an indexable list.
+ */
+private val Player.mediaItems: List<MediaItem>
+    get() = List(mediaItemCount) { getMediaItemAt(it) }
+
 private const val TAG = "PlayerController"
 private const val POSITION_TICK_MS = 250L
 private const val PERSIST_EVERY_TICKS = 20 // ≈ every 5 s of active playback
@@ -349,7 +356,7 @@ class PlayerControllerImpl(
      * -------------------------------------------------------------------------------------- */
 
     override fun onTimelineChanged(timeline: Timeline, reason: Int) {
-        if (reason == Player.TIMELINE_CHANGE_REASON_DYNAMIC) persistQueue()
+        if (reason == Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED) persistQueue()
         publishState()
     }
 
@@ -487,9 +494,9 @@ class PlayerControllerImpl(
         return player.mediaItems.indexOfFirst { it.mediaId == current.mediaId }
     }
 
-    /** Recovers the [MediaMetadata] carried in the item's `mediaMetadata.tag`, else a placeholder. */
+    /** Recovers the [MediaMetadata] carried in the item's `localConfiguration.tag`, else a placeholder. */
     private fun metadataOf(mediaItem: MediaItem): MediaMetadata {
-        val base = mediaItem.mediaMetadata.tag as? MediaMetadata
+        val base = mediaItem.localConfiguration?.tag as? MediaMetadata
             ?: MediaMetadata(id = mediaItem.mediaId, title = mediaItem.mediaId, artists = emptyList(), duration = 0)
         val override = likedOverrides[base.id] ?: return base
         return base.copy(liked = override.liked, likedDate = override.likedDate)
@@ -506,6 +513,7 @@ class PlayerControllerImpl(
             .setMediaId(id)
             .setUri(id)
             .setCustomCacheKey(id)
+            .setTag(this)
             .setMediaMetadata(
                 androidx.media3.common.MediaMetadata.Builder()
                     .setTitle(title)
@@ -514,7 +522,6 @@ class PlayerControllerImpl(
                     .setArtworkUri(thumbnailUrl?.let { Uri.parse(it) })
                     .setMediaType(androidx.media3.common.MediaMetadata.MEDIA_TYPE_MUSIC)
                     .setIsPlayable(true)
-                    .setTag(this)
                     .build(),
             )
             .build()

@@ -104,7 +104,7 @@ internal class ScreenReorderState(
         val count = itemCount
         if (count <= 0) return
         dragOffsetY += deltaY
-        val height = heights[from] ?: fallbackRowHeightPx
+        val height = heights[from]?.toFloat() ?: fallbackRowHeightPx
         if (height <= 0f) return
         val target = (from + (dragOffsetY / height).roundToInt()).coerceIn(0, count - 1)
         if (target != from) {
@@ -131,7 +131,7 @@ internal class ScreenReorderState(
                     dampingRatio = Spring.DampingRatioMediumBouncy,
                     stiffness = Spring.StiffnessMediumLow,
                 ),
-            ) { value -> dragOffsetY = value }
+            ) { dragOffsetY = value }
             draggedIndex = null
             dragOffsetY = 0f
         }

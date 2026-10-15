@@ -63,6 +63,7 @@ class ResolvingDataSourceFactory(
                 .setUpstreamDataSourceFactory(httpFactory)
                 .setFlags(CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR)
         return ResolvingDataSource.Factory(cacheFactory) { dataSpec -> resolve(dataSpec) }
+                .createDataSource()
     }
 
     /** The CONTRACTS §7 resolution flow; runs on ExoPlayer's loader thread and may block. */
@@ -73,7 +74,7 @@ class ResolvingDataSourceFactory(
 
         // 1) The requested 512 KiB chunk may already be on disk — then no URL is needed at all.
         val wantedLength =
-            if (dataSpec.length != C.LENGTH_UNSET) minOf(dataSpec.length, CHUNK_SIZE_BYTES)
+            if (dataSpec.length != C.LENGTH_UNSET.toLong()) minOf(dataSpec.length, CHUNK_SIZE_BYTES)
             else CHUNK_SIZE_BYTES
         if (cache.isCached(videoId, dataSpec.position, wantedLength)) {
             return dataSpec
@@ -128,7 +129,7 @@ class ResolvingDataSourceFactory(
     private fun chunkedSpec(dataSpec: DataSpec, url: String, videoId: String): DataSpec {
         val resolved = dataSpec.buildUpon().setUri(Uri.parse(url)).setKey(videoId).build()
         val chunked =
-            if (resolved.length == C.LENGTH_UNSET || resolved.length > CHUNK_SIZE_BYTES) {
+            if (resolved.length == C.LENGTH_UNSET.toLong() || resolved.length > CHUNK_SIZE_BYTES) {
                 resolved.subrange(0, CHUNK_SIZE_BYTES)
             } else {
                 resolved

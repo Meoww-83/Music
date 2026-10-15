@@ -126,7 +126,11 @@ private fun RowScope.BottomNavigationItem(
     onClick: () -> Unit,
 ) {
     val springSpec = spring<Float>(
-        dampingRatio = Spring.DampingRatioMediumLowBouncy,
+        dampingRatio = Spring.DampingRatioLowBouncy,
+        stiffness = Spring.StiffnessMediumLow,
+    )
+    val springColor = spring<Color>(
+        dampingRatio = Spring.DampingRatioLowBouncy,
         stiffness = Spring.StiffnessMediumLow,
     )
     val container by animateColorAsState(
@@ -135,7 +139,7 @@ private fun RowScope.BottomNavigationItem(
         } else {
             Color.Transparent
         },
-        animationSpec = if (reduceMotion) snap() else springSpec,
+        animationSpec = if (reduceMotion) snap() else springColor,
         label = "navItemContainer",
     )
     val contentColor by animateColorAsState(
@@ -144,7 +148,7 @@ private fun RowScope.BottomNavigationItem(
         } else {
             MaterialTheme.colorScheme.onSurfaceVariant
         },
-        animationSpec = if (reduceMotion) snap() else springSpec,
+        animationSpec = if (reduceMotion) snap() else springColor,
         label = "navItemContent",
     )
     val iconScale by animateFloatAsState(

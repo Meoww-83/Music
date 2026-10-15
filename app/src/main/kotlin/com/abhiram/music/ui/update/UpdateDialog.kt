@@ -27,8 +27,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.AppUpdate
 import androidx.compose.material.icons.rounded.NewReleases
+import androidx.compose.material.icons.rounded.SystemUpdate
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -239,7 +239,7 @@ private fun UpdateCardContent(
                         containerColor = MaterialTheme.colorScheme.primary,
                         contentColor = MaterialTheme.colorScheme.onPrimary,
                         onClick = onUpdate,
-                        icon = Icons.Rounded.AppUpdate,
+                        icon = Icons.Rounded.SystemUpdate,
                         modifier = Modifier.weight(1f),
                     )
                 }

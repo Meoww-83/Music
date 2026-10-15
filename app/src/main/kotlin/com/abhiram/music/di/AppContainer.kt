@@ -34,7 +34,7 @@ class AppContainer(context: Context) {
     val youTubeRepository: YouTubeRepository by lazy { YouTubeRepository() }
 
     /** Typed app preferences over the shared `settings` DataStore. */
-    val preferences: AppPreferences by lazy { AppPreferences(appPreferencesDataStore) }
+    val preferences: AppPreferences by lazy { AppPreferences(appContext.appPreferencesDataStore) }
 }
 
 /**

@@ -16,7 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequest
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import com.abhiram.music.ui.theme.expressiveShapes
@@ -75,7 +75,7 @@ fun TextFieldDialog(
                 onValueChange = { text = it },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .focusRequest(focusRequester),
+                    .focusRequester(focusRequester),
                 label = labelContent,
                 placeholder = placeholderContent,
                 singleLine = singleLine,

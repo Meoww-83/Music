@@ -26,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.IntOffset
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -312,7 +313,7 @@ private fun PlayerPanel(
 
 /** The medium-bouncy spring used for push/pop transitions between destinations. */
 private fun springMedium(): androidx.compose.animation.core.SpringSpec<IntOffset> = spring(
-    dampingRatio = Spring.DampingRatioMediumLowBouncy,
+    dampingRatio = Spring.DampingRatioLowBouncy,
     stiffness = Spring.StiffnessMediumLow,
 )
 

@@ -66,15 +66,15 @@ fun List<YTItem>.songs(): List<SongItem> =
 fun List<YTItem>.videos(): List<SongItem> =
     filterIsInstance<SongItem>().filterNot { it.isEpisode }.filter { it.isVideoSong }
 
-fun List<YTItem>.albums(): List<AlbumItem> = filterIsInstance()
+fun List<YTItem>.albums(): List<AlbumItem> = filterIsInstance<AlbumItem>()
 
-fun List<YTItem>.artists(): List<ArtistItem> = filterIsInstance()
+fun List<YTItem>.artists(): List<ArtistItem> = filterIsInstance<ArtistItem>()
 
-fun List<YTItem>.playlists(): List<PlaylistItem> = filterIsInstance()
+fun List<YTItem>.playlists(): List<PlaylistItem> = filterIsInstance<PlaylistItem>()
 
-fun List<YTItem>.podcasts(): List<PodcastItem> = filterIsInstance()
+fun List<YTItem>.podcasts(): List<PodcastItem> = filterIsInstance<PodcastItem>()
 
-fun List<YTItem>.episodes(): List<EpisodeItem> = filterIsInstance()
+fun List<YTItem>.episodes(): List<EpisodeItem> = filterIsInstance<EpisodeItem>()
 
 /* -------------------------------------------------------------------------------------------
  *  Page-level conveniences

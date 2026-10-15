@@ -89,10 +89,10 @@ internal class GlassBackdropMetrics {
  * can re-render it clipped + blurred inside its own bounds — the "sample the backdrop" trick that
  * gives the glass its liquid look without any root-level graphics capture.
  */
-internal val LocalGlassBackdrop = staticCompositionLocalOf<(@Composable () -> Unit)?>(null)
+internal val LocalGlassBackdrop = staticCompositionLocalOf<(@Composable () -> Unit)?> { null }
 
 /** Metrics of the registered backdrop; `null` when no [GlassBackdrop] is hosted. */
-internal val LocalGlassBackdropMetrics = staticCompositionLocalOf<GlassBackdropMetrics?>(null)
+internal val LocalGlassBackdropMetrics = staticCompositionLocalOf<GlassBackdropMetrics?> { null }
 
 /**
  * Set to `true` while a glass surface is rendering a backdrop *sample*. Nested glass surfaces
@@ -136,9 +136,11 @@ internal const val GlassBlurPadFactor: Float = 2.5f
  * the pane reads as a slightly curved piece of glass rather than a flat overlay.
  */
 internal fun glassTintBrush(tint: Color): Brush = Brush.verticalGradient(
-    tint.copy(alpha = (tint.alpha * 1.15f).coerceAtMost(1f)),
-    tint,
-    tint.copy(alpha = tint.alpha * 0.85f),
+    listOf(
+        tint.copy(alpha = (tint.alpha * 1.15f).coerceAtMost(1f)),
+        tint,
+        tint.copy(alpha = tint.alpha * 0.85f),
+    ),
 )
 
 /**
@@ -162,8 +164,8 @@ internal fun DrawScope.drawGlassBorder(color: Color, shape: Shape, borderWidth: 
                     (rect.height - 2f * inset).coerceAtLeast(0f),
                 ),
                 cornerRadius = CornerRadius(
-                    (rect.cornerRadii.x - inset).coerceAtLeast(0f),
-                    (rect.cornerRadii.y - inset).coerceAtLeast(0f),
+                    (rect.topLeftCornerRadius.x - inset).coerceAtLeast(0f),
+                    (rect.topLeftCornerRadius.y - inset).coerceAtLeast(0f),
                 ),
                 style = stroke,
             )

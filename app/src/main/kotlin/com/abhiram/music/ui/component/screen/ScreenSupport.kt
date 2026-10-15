@@ -6,6 +6,7 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.horizontalScroll
@@ -57,7 +58,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalIndication
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -571,8 +572,8 @@ internal fun MediaMetadata.artistLine(maxItems: Int = 3): String {
 /** Keeps a centred artist line inside a bounded, scrollable width in the cover headers. */
 @Composable
 internal fun CenteredSubtitleLine(
-    content: @Composable RowScope.() -> Unit,
     modifier: Modifier = Modifier,
+    content: @Composable RowScope.() -> Unit,
 ) {
     Box(modifier = modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
         Row(

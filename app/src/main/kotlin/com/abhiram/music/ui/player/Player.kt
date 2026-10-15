@@ -196,7 +196,7 @@ fun Player(
             .background(Color.Black)
             .graphicsLayer {
                 val dismiss =
-                    (dragY.value / size.height.coerceAtLeast(1)).coerceIn(0f, 1f)
+                    (dragY.value / size.height.coerceAtLeast(1f)).coerceIn(0f, 1f)
                 alpha = 1f - dismiss * 0.45f
                 val scale = 1f - dismiss * 0.05f
                 scaleX = scale
