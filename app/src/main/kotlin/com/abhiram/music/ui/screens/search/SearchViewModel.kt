@@ -221,7 +221,10 @@ class SearchViewModel : ViewModel() {
         viewModelScope.launch { dao.deleteSearchHistory(query) }
     }
 
-    /** Plays [items] starting at [index] through the active [com.abhiram.music.playback.PlayerController]. */
+    /**
+     * Loads the results for one (query, filter) combination: the "All" filter renders grouped
+     * sections, every other chip keeps a cached, continuation-paged result list.
+     */
     private suspend fun performSearch(
         query: String,
         filterType: SearchFilterType,

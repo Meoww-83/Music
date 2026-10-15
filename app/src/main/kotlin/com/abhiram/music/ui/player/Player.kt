@@ -79,7 +79,9 @@ import kotlinx.coroutines.launch
  * through the frozen [com.abhiram.music.playback.PlayerController] unless an override callback is
  * supplied.
  *
- * @param playerState snapshot of the player (queue, position, error…).
+ * @param playerState snapshot of the player (queue, position, error…). When `null` (the default,
+ * so the component can be wired into `NavHost` with no arguments) the live state of the frozen
+ * controller is used.
  * @param modifier sizing modifier — normally `Modifier.fillMaxSize()`.
  * @param onClose collapses/dismisses the player; when `null`, drag-to-dismiss springs back instead.
  * @param onPlayPause overrides play/pause (defaults to the controller).
@@ -100,7 +102,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Player(
-    playerState: PlayerState,
+    playerState: PlayerState? = null,
     modifier: Modifier = Modifier,
     onClose: (() -> Unit)? = null,
     onPlayPause: (() -> Unit)? = null,
@@ -118,7 +120,8 @@ fun Player(
     onOverflowClick: (() -> Unit)? = null,
     onNavigate: ((String) -> Unit)? = null,
 ) {
-    val current = playerState.current
+    val state = playerState ?: rememberPlayerState()
+    val current = state.current
     val controller = rememberPlayerController()
     val reduceMotion = rememberReduceMotion()
     val scope = rememberCoroutineScope()
@@ -142,7 +145,7 @@ fun Player(
         scope.launch { dragX.animateTo(0f, spec) }
     }
 
-    val gestureModifier = Modifier.pointerInput(playerState.current?.id, controller) {
+    val gestureModifier = Modifier.pointerInput(state.current?.id, controller) {
         detectDragGestures(
             onDragStart = { },
             onDrag = { change, amount ->
@@ -312,7 +315,7 @@ fun Player(
                         },
                     contentAlignment = Alignment.Center,
                 ) {
-                    val error = playerState.error
+                    val error = state.error
                     when {
                         error != null -> PlaybackError(
                             error = error,
@@ -402,7 +405,7 @@ fun Player(
             /* --- controls ------------------------------------------------------------ */
             Spacer(Modifier.height(14.dp))
             Controls(
-                state = playerState,
+                state = state,
                 onPlayPause = { onPlayPause?.invoke() ?: controller.togglePlayPause() },
                 onNext = { onNext?.invoke() ?: controller.seekToNext() },
                 onPrevious = { onPrevious?.invoke() ?: controller.seekToPrevious() },
@@ -410,7 +413,7 @@ fun Player(
                 onShuffle = { onShuffle?.invoke() ?: controller.toggleShuffle() },
                 onRepeat = {
                     onRepeat?.invoke()
-                        ?: controller.setRepeatMode(cycleRepeatMode(playerState.repeatMode))
+                        ?: controller.setRepeatMode(cycleRepeatMode(state.repeatMode))
                 },
                 modifier = Modifier.fillMaxWidth(),
                 showSecondary = true,
@@ -419,11 +422,11 @@ fun Player(
             /* --- position ------------------------------------------------------------ */
             Spacer(Modifier.height(10.dp))
             SeekBar(
-                positionMs = playerState.positionMs,
-                durationMs = playerState.durationMs,
+                positionMs = state.positionMs,
+                durationMs = state.durationMs,
                 onSeek = { target -> onSeek?.invoke(target) ?: controller.seekTo(target) },
                 modifier = Modifier.fillMaxWidth(),
-                enabled = playerState.durationMs > 0L,
+                enabled = state.durationMs > 0L,
                 squiggly = true,
             )
             Row(
@@ -431,12 +434,12 @@ fun Player(
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(
-                    text = playerState.positionMs.formatDuration(),
+                    text = state.positionMs.formatDuration(),
                     style = MaterialTheme.typography.labelMedium,
                     color = Color.White.copy(alpha = 0.70f),
                 )
                 Text(
-                    text = "-" + (playerState.durationMs - playerState.positionMs)
+                    text = "-" + (state.durationMs - state.positionMs)
                         .coerceAtLeast(0L)
                         .formatDuration(),
                     style = MaterialTheme.typography.labelMedium,
@@ -467,7 +470,7 @@ fun Player(
                     icon = Icons.Rounded.Bedtime,
                     label = "Sleep timer",
                     onClick = sleepAction,
-                    active = playerState.sleepTimerProgress != null,
+                    active = state.sleepTimerProgress != null,
                 )
                 PlayerEntry(
                     icon = Icons.Rounded.BarChart,

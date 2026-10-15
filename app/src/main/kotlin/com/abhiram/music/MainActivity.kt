@@ -12,6 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.compose.rememberNavController
 import com.abhiram.music.di.ServiceLocator
 import com.abhiram.music.ui.glass.GlassBackdrop
 import com.abhiram.music.ui.navigation.AppNavigation
@@ -44,6 +45,7 @@ class MainActivity : ComponentActivity() {
         requestNotificationPermissionIfNeeded()
 
         setContent {
+            val navController = rememberNavController()
             val preferences = remember { ServiceLocator.container.preferences }
             val darkMode by preferences.darkMode.collectAsStateWithLifecycle(initialValue = com.abhiram.music.constants.DarkMode.SYSTEM)
             val dynamicColor by preferences.dynamicColor.collectAsStateWithLifecycle(initialValue = true)
@@ -61,7 +63,7 @@ class MainActivity : ComponentActivity() {
                 pureBlack = pureBlack,
             ) {
                 GlassBackdrop {
-                    AppNavigation()
+                    AppNavigation(navController = navController)
                 }
 
                 UpdateDialog(state = updateState)

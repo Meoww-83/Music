@@ -4,10 +4,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -41,13 +40,13 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.abhiram.innertube.models.AlbumItem
-import com.abhiram.innertube.models.ArtistItem
 import com.abhiram.innertube.models.EpisodeItem
-import com.abhiram.innertube.models.PlaylistItem
 import com.abhiram.innertube.models.PodcastItem
 import com.abhiram.innertube.models.SearchSuggestions
 import com.abhiram.innertube.models.YTItem
+import com.abhiram.innertube.models.AlbumItem as InnertubeAlbumItem
+import com.abhiram.innertube.models.ArtistItem as InnertubeArtistItem
+import com.abhiram.innertube.models.PlaylistItem as InnertubePlaylistItem
 import com.abhiram.innertube.models.SongItem as InnertubeSongItem
 import com.abhiram.music.database.entities.SearchHistory
 import com.abhiram.music.ui.component.items.AlbumItem
@@ -215,9 +214,9 @@ fun SearchSuggestionList(
             when (item) {
                 is InnertubeSongItem -> SongItem(item = item, onClick = { onSongClick(item) })
 
-                is AlbumItem -> AlbumItem(item = item, onClick = { onNavigateToItem(item) }, gridItem = false)
-                is ArtistItem -> ArtistItem(item = item, onClick = { onNavigateToItem(item) }, gridItem = false)
-                is PlaylistItem -> PlaylistItem(item = item, onClick = { onNavigateToItem(item) }, gridItem = false)
+                is InnertubeAlbumItem -> AlbumItem(item = item, onClick = { onNavigateToItem(item) }, gridItem = false)
+                is InnertubeArtistItem -> ArtistItem(item = item, onClick = { onNavigateToItem(item) }, gridItem = false)
+                is InnertubePlaylistItem -> PlaylistItem(item = item, onClick = { onNavigateToItem(item) }, gridItem = false)
                 is PodcastItem ->
                     PlaylistItem(
                         item = item.asPlaylistItem(),

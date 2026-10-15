@@ -60,7 +60,9 @@ import com.abhiram.music.ui.component.TooltipIconButton
  * cache-first) inside `produceState`, keyed by the current song — playback state itself is only
  * read from [playerState].
  *
- * @param playerState snapshot of the player; the current track's id selects the lyrics.
+ * @param playerState snapshot of the player; the current track's id selects the lyrics. When
+ * `null` (the default, so the component can be wired into `NavHost` with no arguments) the live
+ * state of the frozen controller is used.
  * @param modifier sizing modifier.
  * @param onSeek invoked with a timestamp in ms when a synchronized line is tapped; defaults to
  * `PlayerController.seekTo`.
@@ -68,13 +70,14 @@ import com.abhiram.music.ui.component.TooltipIconButton
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Lyrics(
-    playerState: PlayerState,
+    playerState: PlayerState? = null,
     modifier: Modifier = Modifier,
     onSeek: ((Long) -> Unit)? = null,
 ) {
+    val state = playerState ?: rememberPlayerState()
     val controller = rememberPlayerController()
     val reduceMotion = rememberReduceMotion()
-    val videoId = playerState.current?.id.orEmpty()
+    val videoId = state.current?.id.orEmpty()
     var revision by remember(videoId) { mutableIntStateOf(0) }
 
     val ui by produceState<LyricsUi>(initialValue = LyricsUi.Loading, videoId, revision) {
@@ -139,7 +142,7 @@ fun Lyrics(
                     if (syncedLines.isNotEmpty()) {
                         SyncedLyrics(
                             lines = syncedLines,
-                            positionMs = playerState.positionMs,
+                            positionMs = state.positionMs,
                             controllerSeek = { target -> controller.seekTo(target) },
                             onSeek = onSeek,
                             reduceMotion = reduceMotion,
@@ -292,7 +295,7 @@ private fun SyncedLyrics(
                         val target = line.timeMs.coerceAtLeast(0L)
                         if (onSeek != null) onSeek(target) else controllerSeek(target)
                     }
-                    .padding(vertical = 4.dp),
+                    .padding(vertical = 8.dp),
             )
         }
     }

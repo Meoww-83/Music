@@ -27,10 +27,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
@@ -116,14 +116,14 @@ fun MenuEntry(
     } else {
         MaterialTheme.colorScheme.onSurface
     }
-    val background = remember(highlightColor) { highlightColor.copy(alpha = 0.10f) }
+    val highlightTint = remember(highlightColor) { highlightColor.copy(alpha = 0.10f) }
 
     Row(
         modifier = modifier
             .fillMaxWidth()
             .defaultMinSize(minHeight = 56.dp)
             .clip(RoundedCornerShape(20.dp))
-            .background(background.copy(alpha = background.alpha * highlight))
+            .background(highlightTint.copy(alpha = highlightTint.alpha * highlight))
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,
@@ -196,4 +196,4 @@ private const val MAX_STAGGER_INDEX: Int = 6
 private const val STAGGER_STEP_MS: Long = 35L
 
 /** Current sheet's stagger clock; `null` outside a [BaseMediaItemMenu] (entries appear instantly). */
-internal val LocalMenuStagger = androidx.compose.runtime.staticCompositionLocalOf<MenuStaggerClock?> { null }
+internal val LocalMenuStagger = staticCompositionLocalOf<MenuStaggerClock?> { null }

@@ -62,37 +62,42 @@ import com.abhiram.music.utils.formatDuration
  * `PlayerController.setSleepTimer(ms)`, and — while a timer is armed — a **live countdown** ring
  * driven by `PlayerState.sleepTimerProgress` (0f..1f remaining) with a cancel action.
  *
- * @param playerState snapshot of the player; `sleepTimerProgress` drives the countdown.
+ * @param playerState snapshot of the player; `sleepTimerProgress` drives the countdown. When
+ * `null` (the default, so the component can be wired into `NavHost` with no arguments) the live
+ * state of the frozen controller is used.
  * @param modifier sizing modifier.
  * @param onDismiss optional close callback (used when hosted in a sheet).
  */
 @Composable
 fun SleepTimer(
-    playerState: PlayerState,
+    playerState: PlayerState? = null,
     modifier: Modifier = Modifier,
     onDismiss: (() -> Unit)? = null,
 ) {
+    val state = playerState ?: rememberPlayerState()
     val controller = rememberPlayerController()
     val preferences = remember { ServiceLocator.container.preferences }
     val defaultMinutes by preferences.defaultSleepTimerMinutes.collectAsState(initial = 30)
     val persistedRemainingMs by preferences.sleepTimerRemainingMs.collectAsState(initial = null)
 
-    val progress = playerState.sleepTimerProgress
-    val armed = progress != null
+    val progress = state.sleepTimerProgress
 
     var selectedMinutes by remember { mutableIntStateOf(defaultMinutes) }
     var armedDurationMs by rememberSaveable { mutableLongStateOf(0L) }
     var showCustomDialog by remember { mutableStateOf(false) }
 
-    LaunchedEffect(defaultMinutes, armed) {
-        if (!armed) selectedMinutes = defaultMinutes
+    LaunchedEffect(defaultMinutes, progress) {
+        if (progress == null) selectedMinutes = defaultMinutes
     }
 
-    val remainingMs: Long? = when {
-        progress == null -> null
-        persistedRemainingMs != null -> persistedRemainingMs
-        armedDurationMs > 0L -> (progress * armedDurationMs).toLong()
-        else -> null
+    val remainingMs: Long? = if (progress == null) {
+        null
+    } else if (persistedRemainingMs != null) {
+        persistedRemainingMs
+    } else if (armedDurationMs > 0L) {
+        (progress * armedDurationMs).toLong()
+    } else {
+        null
     }
 
     Column(
@@ -122,19 +127,24 @@ fun SleepTimer(
             )
             Spacer(Modifier.weight(1f))
             if (onDismiss != null) {
-                Text(
-                    text = "Done",
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.primary,
+                Box(
+                    contentAlignment = Alignment.Center,
                     modifier = Modifier
+                        .height(48.dp)
                         .clip(CircleShape)
                         .clickable(onClick = onDismiss)
-                        .padding(horizontal = 14.dp, vertical = 12.dp),
-                )
+                        .padding(horizontal = 16.dp),
+                ) {
+                    Text(
+                        text = "Done",
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+                }
             }
         }
 
-        if (armed) {
+        if (progress != null) {
             /* --- live countdown ---------------------------------------------------- */
             val animatedProgress by animateFloatAsState(
                 targetValue = progress.coerceIn(0f, 1f),

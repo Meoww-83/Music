@@ -29,11 +29,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.time.LocalDateTime
 import java.util.concurrent.ConcurrentHashMap
@@ -86,7 +86,9 @@ class PlayerControllerImpl(
     private val statsTracker: PlaybackStatsTracker by lazy {
         PlaybackStatsTracker(ServiceLocator.container.dao)
     }
-    private val sleepTimer = SleepTimer { pause() }
+    // SleepTimer ticks on Dispatchers.Default; hop back to the player thread before touching
+    // ExoPlayer (Media3 throws when a player is accessed off its application looper).
+    private val sleepTimer = SleepTimer { withContext(Dispatchers.Main) { pause() } }
 
     private var lastError: PlaybackError? = null
     @Volatile
@@ -337,7 +339,9 @@ class PlayerControllerImpl(
      */
     fun persistNow() {
         if (destroyed || !persistentQueueEnabled) return
-        runBlocking(Dispatchers.IO) { writeQueueSnapshot(buildQueueSnapshot()) }
+        // Snapshot on the caller (player) thread; only the Room write blocks on IO.
+        val snapshot = buildQueueSnapshot()
+        runBlocking(Dispatchers.IO) { writeQueueSnapshot(snapshot) }
     }
 
     /* -------------------------------------------------------------------------------------- *
@@ -561,7 +565,11 @@ class PlayerControllerImpl(
         }
     }
 
-    private fun writeQueueSnapshot(snapshot: List<QueuedMediaItem>) {
+    /**
+     * Writes one queue snapshot to Room (`saveQueue` replaces the table atomically). Suspend
+     * because the DAO suspends; every caller wraps it in `runBlocking`/`launch`.
+     */
+    private suspend fun writeQueueSnapshot(snapshot: List<QueuedMediaItem>) {
         runCatching {
             val dao = ServiceLocator.container.dao
             if (snapshot.isEmpty()) dao.clearQueue() else dao.saveQueue(snapshot)

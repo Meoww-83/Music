@@ -121,6 +121,15 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
+    /** Wipes the listening history (events) and the Top-played play counts. */
+    fun clearPlayHistory() {
+        viewModelScope.launch {
+            dao.clearEvents()
+            dao.clearPlayCounts()
+            refreshDatabaseInfo()
+        }
+    }
+
     /** Checks GitHub for a newer release and exposes it through [updateInfo]. */
     fun checkForUpdate() {
         viewModelScope.launch {

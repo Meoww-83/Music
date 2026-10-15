@@ -79,6 +79,8 @@ import kotlin.math.roundToInt
  * [com.abhiram.music.playback.PlayerController] unless an override callback is supplied.
  *
  * @param playerState snapshot of the player (queue, currentIndex, isPlaying, repeat, shuffle).
+ * When `null` (the default, so the component can be wired into `NavHost` with no arguments) the
+ * live state of the frozen controller is used.
  * @param modifier sizing modifier (`fillMaxWidth`/`heightIn` are typical in a sheet).
  * @param onSongClick plays the tapped row (defaults to `playAll(queue, index)` on the controller).
  * @param onRemove removes a row (defaults to `removeQueueItem`).
@@ -90,7 +92,7 @@ import kotlin.math.roundToInt
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Queue(
-    playerState: PlayerState,
+    playerState: PlayerState? = null,
     modifier: Modifier = Modifier,
     onSongClick: ((index: Int) -> Unit)? = null,
     onRemove: ((index: Int) -> Unit)? = null,
@@ -99,7 +101,8 @@ fun Queue(
     onShuffle: (() -> Unit)? = null,
     onRepeat: (() -> Unit)? = null,
 ) {
-    val queue = playerState.queue
+    val state = playerState ?: rememberPlayerState()
+    val queue = state.queue
     val controller = rememberPlayerController()
     val haptics = LocalHapticFeedback.current
     val density = LocalDensity.current
@@ -169,7 +172,7 @@ fun Queue(
         if (handler != null) {
             handler(index)
         } else {
-            controller.playAll(currentQueue, index, playerState.shuffleEnabled)
+            controller.playAll(currentQueue, index, state.shuffleEnabled)
         }
     }
 
@@ -193,11 +196,11 @@ fun Queue(
 
     Column(modifier = modifier.fillMaxSize()) {
         QueueHeader(
-            state = playerState,
+            state = state,
             onShuffle = { onShuffle?.invoke() ?: controller.toggleShuffle() },
             onRepeat = {
                 onRepeat?.invoke()
-                    ?: controller.setRepeatMode(cycleRepeatMode(playerState.repeatMode))
+                    ?: controller.setRepeatMode(cycleRepeatMode(state.repeatMode))
             },
             onClear = { showClearDialog = true },
         )
@@ -218,7 +221,7 @@ fun Queue(
                     items = queue,
                     key = { index, _ -> rowKeys[index] },
                 ) { index, item ->
-                    val isActive = index == playerState.currentIndex
+                    val isActive = index == state.currentIndex
                     val isDragged = index == draggedIndex
                     SwipeToActionBox(
                         onAction = { removeIndex(index) },
@@ -246,7 +249,7 @@ fun Queue(
                             modifier = Modifier.fillMaxWidth(),
                             onClick = { playIndex(index) },
                             active = isActive,
-                            playing = isActive && playerState.isPlaying,
+                            playing = isActive && state.isPlaying,
                             leadingContent = {
                                 QueueDragHandle(
                                     onDragStart = { beginDrag(index) },

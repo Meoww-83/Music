@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -15,6 +16,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -35,7 +37,8 @@ import com.abhiram.music.ui.navigation.Routes
  * Assembles the floating [SearchInputField] (recent-search chips while idle, debounced inline
  * suggestions while typing) over the [SearchResults] body, driven entirely by [SearchViewModel].
  * Committed queries are persisted through `MusicRepository.pushSearchHistory()` (when enabled)
- * and songs play through `PlayerControllerProvider.controller?.playAll(items, index)`.
+ * and songs play through `PlayerControllerProvider.playAll(context, items, index)`, which
+ * cold-starts the playback service on the very first tap.
  *
  * @param onBack invoked when the user backs out of the search screen (empty query).
  * @param onNavigate invoked with a destination route (`artist/{id}`, `album/{id}`,
@@ -54,8 +57,8 @@ fun SearchScreen(
     val resultsQuery by viewModel.resultsQuery.collectAsStateWithLifecycle()
     val suggestions by viewModel.suggestions.collectAsStateWithLifecycle()
     val history by viewModel.history.collectAsStateWithLifecycle()
+    val context = LocalContext.current
     val filter by viewModel.filter.collectAsStateWithLifecycle()
-    val controller by PlayerControllerProvider.controller.collectAsStateWithLifecycle()
 
     val sections = viewModel.sections
     val filtered = viewModel.filteredResults[filter]
@@ -71,9 +74,11 @@ fun SearchScreen(
         { song ->
             val index = playableItems.indexOfFirst { it.id == song.id }
             if (index >= 0) {
-                controller?.playAll(playableItems.map { it.toMediaMetadata() }, index)
+                PlayerControllerProvider.playAll(context, playableItems.map { it.toMediaMetadata() }, index)
             } else {
-                controller?.play(song.toMediaMetadata())
+                PlayerControllerProvider.with(context) { controller ->
+                    controller.play(song.toMediaMetadata())
+                }
             }
         }
     }

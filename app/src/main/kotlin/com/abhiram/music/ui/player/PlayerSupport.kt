@@ -4,7 +4,9 @@ import android.provider.Settings
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.InteractionSource
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
@@ -28,6 +30,7 @@ import coil3.toBitmap
 import com.abhiram.music.playback.NoOpPlayerController
 import com.abhiram.music.playback.PlayerController
 import com.abhiram.music.playback.PlayerControllerProvider
+import com.abhiram.music.playback.PlayerState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -48,6 +51,20 @@ import kotlinx.coroutines.withContext
 internal fun rememberPlayerController(): PlayerController {
     val controller by PlayerControllerProvider.controller.collectAsState()
     return controller ?: NoOpPlayerController
+}
+
+/**
+ * Live snapshot of the frozen controller state.
+ *
+ * Route destinations of §8 (`player`, `player/lyrics`, `player/queue`, `player/sleepTimer`,
+ * `player/stats`) must be constructible without arguments, so those composables fall back to this
+ * when the host does not pass a [PlayerState] explicitly. It only *reads* playback state.
+ */
+@Composable
+internal fun rememberPlayerState(): PlayerState {
+    val controller = rememberPlayerController()
+    val state by controller.state.collectAsState()
+    return state
 }
 
 /** True when the system animator duration scale is 0 (reduced motion / accessibility). */
@@ -92,6 +109,31 @@ internal fun Modifier.springPress(
         scaleX = scale
         scaleY = scale
     }
+}
+
+/**
+ * A plain click target with the shared [springPress] feedback: the whole target bounces when
+ * pressed and stays static under reduced motion. Used by text-ish affordances (diagnostics rows,
+ * the tappable video id) that do not want a material ripple.
+ */
+@Composable
+internal fun Modifier.springTap(
+    onClick: () -> Unit,
+    reduceMotion: Boolean = false,
+    pressedScale: Float = 0.97f,
+): Modifier {
+    val interactionSource = remember { MutableInteractionSource() }
+    return this
+        .springPress(
+            interactionSource = interactionSource,
+            reduceMotion = reduceMotion,
+            pressedScale = pressedScale,
+        )
+        .clickable(
+            interactionSource = interactionSource,
+            indication = null,
+            onClick = onClick,
+        )
 }
 
 /* -------------------------------------------------------------------------------------------
@@ -142,7 +184,8 @@ internal fun rememberArtworkState(url: String?): State<ArtworkState> {
                     // Hardware bitmaps cannot be read back for palette extraction.
                     .allowHardware(false)
                     .build()
-                context.imageLoader.execute(request).image.toBitmap()
+                val result = context.imageLoader.execute(request)
+                result.image?.toBitmap()
             }
         }.getOrNull()
         if (bitmap == null) {

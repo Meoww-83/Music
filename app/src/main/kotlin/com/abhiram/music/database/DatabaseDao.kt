@@ -178,6 +178,18 @@ abstract class DatabaseDao {
     @Query("DELETE FROM play_count WHERE songId = :songId")
     protected abstract suspend fun deletePlayCountOfSong(songId: String)
 
+    /* -------------------------------------------------------------------------------
+     *  Whole-table wipes used by the database settings screen
+     * --------------------------------------------------------------------------- */
+
+    /** Deletes every listening event (the "play history" shown in History). */
+    @Query("DELETE FROM event")
+    abstract suspend fun clearEvents()
+
+    /** Deletes every play-count row (Top played rankings). */
+    @Query("DELETE FROM play_count")
+    abstract suspend fun clearPlayCounts()
+
     /**
      * Deletes a song and every dependent row (join maps, playlist membership, events,
      * format, lyrics and play count) in one transaction.
