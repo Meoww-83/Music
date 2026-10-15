@@ -45,13 +45,11 @@ fun YTItem.toMediaMetadataOrNull(): MediaMetadata? =
  *  Lists
  * ---------------------------------------------------------------------------------------- */
 
-/** Maps a list of [SongItem]s (already typed by the innertube parser) to [MediaMetadata]. */
-fun List<SongItem>.toMediaMetadataList(): List<MediaMetadata> = map { it.toMediaMetadata() }
-
-/** Maps a list of [EpisodeItem]s to [MediaMetadata]. */
-fun List<EpisodeItem>.toMediaMetadataList(): List<MediaMetadata> = map { it.toMediaMetadata() }
-
-/** Maps a heterogeneous [YTItem] list, dropping non-playable entries. */
+/**
+ * Maps a heterogeneous [YTItem] list to [MediaMetadata], dropping non-playable entries
+ * (albums, artists, playlists, podcasts). [SongItem] and [EpisodeItem] are [YTItem] subtypes,
+ * so this single extension covers every list the parsers produce.
+ */
 fun List<YTItem>.toMediaMetadataList(): List<MediaMetadata> = mapNotNull { it.toMediaMetadataOrNull() }
 
 /* -------------------------------------------------------------------------------------------
